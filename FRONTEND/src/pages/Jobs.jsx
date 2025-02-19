@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { clearAllJobErrors, fetchJobs } from "../store/slices/jobSlice";
 import Spinner from "../components/Spinner";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaBookmark, FaStar, FaSync } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import '../styles/Jobs.css';
 
 const Jobs = () => {
   const [city, setCity] = useState("");
@@ -81,106 +82,146 @@ const Jobs = () => {
       {loading ? (
         <Spinner />
       ) : (
-        <section className="jobs">
-          <div className="search-tab-wrapper">
-            <input
-              type="text"
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-            />
-            <button onClick={handleSearch}>Find Job</button>
-            <FaSearch />
-          </div>
-          <div className="wrapper">
-            <div className="filter-bar">
-              <div className="cities">
-                <h2>Filter Job By City</h2>
-                {cities.map((city, index) => (
-                  <div key={index}>
-                    <input
-                      type="radio"
-                      id={city}
-                      name="city"
-                      value={city}
-                      checked={selectedCity === city}
-                      onChange={() => handleCityChange(city)}
-                    />
-                    <label htmlFor={city}>{city}</label>
-                  </div>
-                ))}
+        <section className="jobs-container">
+          <div className="jobs-layout">
+            {/* Left Sidebar Filter */}
+            <div className="filter-sidebar">
+              <h2 className="filter-title">Filter</h2>
+              
+              <div className="filter-group">
+                <h3>Category</h3>
+                <select className="select-input">
+                  <option>Anytime</option>
+                  {cities.map((city) => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
               </div>
-              <div className="cities">
-                <h2>Filter Job By Niche</h2>
-                {nichesArray.map((niche, index) => (
-                  <div key={index}>
-                    <input
-                      type="radio"
-                      id={niche}
-                      name="niche"
-                      value={niche}
-                      checked={selectedNiche === niche}
-                      onChange={() => handleNicheChange(niche)}
-                    />
-                    <label htmlFor={niche}>{niche}</label>
-                  </div>
-                ))}
+
+              <div className="filter-group">
+                <h3>Job Type</h3>
+                <div className="checkbox-group">
+                  <label className="checkbox-label">
+                    <input type="checkbox" defaultChecked />
+                    <span>Full-time</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>Internship</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>Freelance</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input type="checkbox" />
+                    <span>Volunteer</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="filter-group">
+                <h3>Niche</h3>
+                <div className="radio-group">
+                  {nichesArray.map((niche) => (
+                    <label key={niche} className="radio-label">
+                      <input
+                        type="radio"
+                        name="niche"
+                        value={niche}
+                        checked={selectedNiche === niche}
+                        onChange={() => handleNicheChange(niche)}
+                      />
+                      <span>{niche}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="filter-group">
+                <h3>Expected salary</h3>
+                <div className="salary-range">
+                  <span>₹10K</span>
+                  <input type="range" min="10000" max="100000" step="1000" />
+                  <span>₹100K</span>
+                </div>
               </div>
             </div>
-            <div className="container">
-              <div className="mobile-filter">
-                <select value={city} onChange={(e) => setCity(e.target.value)}>
-                  <option value="">Filter By City</option>
-                  {cities.map((city, index) => (
-                    <option value={city} key={index}>
-                      {city}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={niche}
-                  onChange={(e) => setNiche(e.target.value)}
-                >
-                  <option value="">Filter By Niche</option>
-                  {nichesArray.map((niche, index) => (
-                    <option value={niche} key={index}>
-                      {niche}
-                    </option>
-                  ))}
-                </select>
+
+            {/* Main Content */}
+            <div className="main-content">
+              <div className="header-section">
+                <h1>Find your dream job here</h1>
+                <p>Join us to find your dream job in various skills, with many additional benefits</p>
               </div>
-              <div className="jobs_container">
-                {jobs &&
-                  jobs.map((element) => {
-                    return (
-                      <div className="card" key={element._id}>
-                        {element.hiringMultipleCandidates === "Yes" ? (
-                          <p className="hiring-multiple">
-                            Hiring Multiple Candidates
-                          </p>
-                        ) : (
-                          <p className="hiring">Hiring</p>
-                        )}
-                        <p className="title">{element.title}</p>
-                        <p className="company">{element.companyName}</p>
-                        <p className="location">{element.location}</p>
-                        <p className="salary">
-                          <span>Salary:</span> Rs. {element.salary}
-                        </p>
-                        <p className="posted">
-                          <span>Posted On:</span>{" "}
-                          {element.jobPostedOn.substring(0, 10)}
-                        </p>
-                        <div className="btn-wrapper">
-                          <Link
-                            className="btn"
-                            to={`/post/application/${element._id}`}
-                          >
-                            Apply Now
-                          </Link>
+
+              <div className="search-section">
+                <div className="search-input-wrapper">
+                  <FaSearch className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder="Search your job"
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    className="search-input"
+                  />
+                </div>
+                <button onClick={handleSearch} className="search-button">
+                  Search
+                </button>
+                <button className="refresh-button">
+                  <FaSync />
+                </button>
+              </div>
+
+              <div className="job-cards">
+                {jobs && jobs.map((job) => (
+                  <div key={job._id} className="job-card">
+                    <div className="job-card-header">
+                      <div className="company-info">
+                        <div className="company-logo">
+                          {job.companyName[0]}
+                        </div>
+                        <div className="job-title-section">
+                          <h3>{job.title}</h3>
+                          <p>{job.companyName}</p>
                         </div>
                       </div>
-                    );
-                  })}
+                      <button className="bookmark-button">
+                        <FaBookmark />
+                      </button>
+                    </div>
+
+                    <div className="job-details">
+                      <div className="job-meta">
+                        <span>Location: {job.location}</span>
+                        <span>Salary: ₹{job.salary}</span>
+                      </div>
+                      
+                      <div className="job-tags">
+                        {job.hiringMultipleCandidates === "Yes" && (
+                          <span className="tag">Multiple Openings</span>
+                        )}
+                        <span className="tag">Full Time</span>
+                      </div>
+                    </div>
+
+                    <div className="job-card-footer">
+                      <div className="rating">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar key={i} />
+                        ))}
+                      </div>
+                      <p className="posted-date">Posted: {job.jobPostedOn.substring(0, 10)}</p>
+                      <Link 
+                        to={`/post/application/${job._id}`}
+                        className="apply-button"
+                      >
+                        Apply Now
+                      </Link>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

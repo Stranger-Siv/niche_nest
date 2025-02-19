@@ -1,46 +1,45 @@
-import React, { useState } from "react";
+import React from "react";
+import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { GiHamburgerMenu } from "react-icons/gi";
+import "../styles/Navbar.css";
+
 const Navbar = () => {
-  const [show, setShow] = useState(false);
-  const { isAuthenticated } = useSelector((state) => state.user);
+  const { isAuthenticated, user } = useSelector((state) => state.user);
+
   return (
-    <>
-      <nav className={show ? "navbar show_navbar" : "navbar"}>
-        <div className="logo">
-          <img src="/logo.png" alt="logo" />
+    <nav className="navbar">
+      <div className="nav-container">
+        {/* Logo */}
+        <Link to="/" className="nav-logo" aria-label="Niche-Nest">
+          <span className="logo-icon">L</span>
+          <span className="logo-text">Lamar</span>
+        </Link>
+
+        {/* Navigation Links */}
+        <div className="nav-links">
+          {["jobs", "contact"].map((item) => (
+            <NavLink key={item} to={`/${item}`} className="nav-link" activeClassName="active-link">
+              {item.charAt(0).toUpperCase() + item.slice(1)}
+            </NavLink>
+          ))}
         </div>
-        <div className="links">
-          <ul>
-            <li>
-              <Link to={"/"} onClick={() => setShow(!show)}>
-                HOME
-              </Link>
-            </li>
-            <li>
-              <Link to={"/jobs"} onClick={() => setShow(!show)}>
-                JOBS
-              </Link>
-            </li>
-            {isAuthenticated ? (
-              <li>
-                <Link to={"/dashboard"} onClick={() => setShow(!show)}>
-                  DASHBOARD
-                </Link>
-              </li>
-            ) : (
-              <li>
-                <Link to={"/login"} onClick={() => setShow(!show)}>
-                  LOGIN
-                </Link>
-              </li>
-            )}
-          </ul>
+
+        {/* Authentication Section */}
+        <div className="nav-auth">
+          {isAuthenticated ? (
+            <Link to="/dashboard" className="nav-profile" aria-label="User Dashboard">
+              <span className="profile-icon">{user?.name?.charAt(0)}</span>
+              <span className="profile-name">{user?.name}</span>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="sign-in-btn">Sign In</Link>
+              <Link to="/register" className="get-started-btn">Get Started →</Link>
+            </>
+          )}
         </div>
-        <GiHamburgerMenu className="hamburger" onClick={() => setShow(!show)} />
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 };
 

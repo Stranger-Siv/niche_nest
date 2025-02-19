@@ -10,79 +10,77 @@ import {
 
 const Footer = () => {
   const { isAuthenticated } = useSelector((state) => state.user);
+
   return (
-    <>
-      <footer>
-        <div>
-          <img src="/logo.png" alt="logo" />
+    <footer className="footer">
+      <div className="footer-container">
+        {/* Logo Section */}
+        <div className="footer-logo">
+          <Link to="/" className="footer-brand">
+            <span className="footer-logo-icon">L</span>
+            <span className="footer-logo-text">Lamar</span>
+          </Link>
         </div>
-        <div>
-          <h4>Support</h4>
-          <ul>
+
+        {/* Support Section */}
+        <div className="footer-section">
+          <h4 className="footer-title">Support</h4>
+          <ul className="footer-list">
             <li>Vadodara, Gujarat</li>
-            <li>programmersiv21@gmail.com</li>
-            <li>+91 8866209083</li>
+            <li>
+              <a href="mailto:programmersiv21@gmail.com" className="footer-link">
+                programmersiv21@gmail.com
+              </a>
+            </li>
+            <li>
+              <a href="tel:+918866209083" className="footer-link">
+                +91 8866209083
+              </a>
+            </li>
           </ul>
         </div>
 
-        <div>
-          <h4>Quick Links</h4>
-          <ul>
-          <li>
-              <Link to={"/"}>Home</Link>
+        {/* Quick Links */}
+        <div className="footer-section">
+          <h4 className="footer-title">Quick Links</h4>
+          <ul className="footer-list">
+            <li>
+              <Link to="/" className="footer-link">Home</Link>
             </li>
             <li>
-              <Link to={"/jobs"}>Jobs</Link>
+              <Link to="/jobs" className="footer-link">Jobs</Link>
             </li>
             {isAuthenticated && (
               <li>
-                <Link to={"/dashboard"}>Dashboard</Link>
+                <Link to="/dashboard" className="footer-link">Dashboard</Link>
               </li>
             )}
           </ul>
         </div>
-        <div>
-          <h4>Follow Us</h4>
-          <ul>
-            <li>
-              <Link to={"/"}>
-                <span>
-                  <FaSquareXTwitter />
-                </span>
-                <span>Twitter (X)</span>
-              </Link>
-            </li>
-            <li>
-              <Link to={"/"}>
-                <span>
-                  <FaSquareInstagram />
-                </span>
-                <span>Instagram</span>
-              </Link>
-            </li>
-            <li>
-              <Link to={"/"}>
-                <span>
-                  <FaYoutube />
-                </span>
-                <span>Youtube</span>
-              </Link>
-            </li>
-            <li>
-              <Link to={"/"}>
-                <span>
-                  <FaLinkedin />
-                </span>
-                <span>LinkedIn</span>
-              </Link>
-            </li>
-          </ul>
+
+        {/* Social Media */}
+        <div className="footer-section">
+          <h4 className="footer-title">Follow Us</h4>
+          <div className="footer-social">
+            {[
+              { icon: <FaSquareXTwitter />, name: "Twitter (X)", url: "https://twitter.com" },
+              { icon: <FaSquareInstagram />, name: "Instagram", url: "https://instagram.com" },
+              { icon: <FaYoutube />, name: "YouTube", url: "https://youtube.com" },
+              { icon: <FaLinkedin />, name: "LinkedIn", url: "https://linkedin.com" },
+            ].map(({ icon, name, url }) => (
+              <a key={name} href={url} target="_blank" rel="noopener noreferrer" className="footer-social-link">
+                {icon} <span>{name}</span>
+              </a>
+            ))}
+          </div>
         </div>
-      </footer>
-      <div className="copyright">
-        &copy; CopyRight 2024. All Rights Reserved By NicheNest
       </div>
-    </>
+
+      {/* Copyright */}
+      <div className="footer-bottom">
+        &copy; {new Date().getFullYear()} All Rights Reserved By NicheNest
+      </div>
+    </footer>
   );
 };
 
