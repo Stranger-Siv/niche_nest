@@ -1,6 +1,7 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { FaRegBell, FaRegBookmark, FaRegUser, FaBriefcase } from "react-icons/fa";
 import "../styles/Navbar.css";
 
 const Navbar = () => {
@@ -10,32 +11,35 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="nav-container">
         {/* Logo */}
-        <Link to="/" className="nav-logo" aria-label="Niche-Nest">
-          <span className="logo-icon">L</span>
-          <span className="logo-text">Lamar</span>
+        <Link to="/" className="nav-logo" aria-label="NicheNest">
+          <div className="logo-wrapper">
+            <span className="logo-icon">N</span>
+            <div className="logo-dot"></div>
+          </div>
+          <span className="logo-text">NicheNest</span>
         </Link>
 
-        {/* Navigation Links */}
-        <div className="nav-links">
-          {["jobs", "contact"].map((item) => (
-            <NavLink key={item} to={`/${item}`} className="nav-link" activeClassName="active-link">
-              {item.charAt(0).toUpperCase() + item.slice(1)}
-            </NavLink>
-          ))}
-        </div>
-
-        {/* Authentication Section */}
+        {/* Auth Section */}
         <div className="nav-auth">
+          <Link to="/jobs" className="jobs-link">
+            <FaBriefcase className="nav-icon" />
+            <span>Jobs</span>
+          </Link>
           {isAuthenticated ? (
-            <Link to="/dashboard" className="nav-profile" aria-label="User Dashboard">
-              <span className="profile-icon">{user?.name?.charAt(0)}</span>
-              <span className="profile-name">{user?.name}</span>
-            </Link>
+            <div className="nav-user-section">              
+              <div className="divider"></div>
+              <Link to="/dashboard" className="nav-profile" title="Dashboard">
+                <span className="profile-icon">{user?.name?.charAt(0)}</span>
+              </Link>
+            </div>
           ) : (
-            <>
-              <Link to="/login" className="sign-in-btn">Sign In</Link>
-              <Link to="/register" className="get-started-btn">Get Started →</Link>
-            </>
+            <div className="nav-user-section">
+              <div className="divider"></div>
+              <Link to="/login" className="sign-in-btn">
+                <FaRegUser className="nav-icon" />
+                <span>Sign In</span>
+              </Link>
+            </div>
           )}
         </div>
       </div>

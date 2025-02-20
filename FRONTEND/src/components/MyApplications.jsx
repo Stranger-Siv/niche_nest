@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { FaTrash, FaFileAlt, FaBriefcase, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import {
   clearAllApplicationErrors,
   resetApplicationSlice,
@@ -11,7 +12,6 @@ import {
 import Spinner from "../components/Spinner";
 
 const MyApplications = () => {
-  const { user, isAuthenticated } = useSelector((state) => state.user);
   const { loading, error, applications, message } = useSelector(
     (state) => state.applications
   );
@@ -34,74 +34,99 @@ const MyApplications = () => {
   }, [dispatch, error, message]);
 
   const handleDeleteApplication = (id) => {
-    dispatch(deleteApplication(id));
+    if (window.confirm("Are you sure you want to delete this application?")) {
+      dispatch(deleteApplication(id));
+    }
   };
 
+  if (loading) return <Spinner />;
+
+  if (applications && applications.length <= 0) {
+    return (
+      <div className="empty-state">
+        <FaBriefcase className="empty-icon" />
+        <h2>No Applications Found</h2>
+        <p>You haven't applied to any jobs yet.</p>
+        <Link to="/jobs" className="browse-jobs-btn">Browse Jobs</Link>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {loading ? (
-        <Spinner />
-      ) : applications && applications.length <= 0 ? (
-        <h1 style={{ fontSize: "1.4rem", fontWeight: "600" }}>
-          You have not applied for any job.
-        </h1>
-      ) : (
-        <>
-          <div className="account_components">
-            <h3>My Application For Jobs</h3>
-            <div className="applications_container">
-              {applications.map((element) => {
-                return (
-                  <div className="card" key={element._id}>
-                    <p className="sub-sec">
-                      <span>Job Title: </span> {element.jobInfo.jobTitle}
-                    </p>
-                    <p className="sub-sec">
-                      <span>Name</span> {element.jobSeekerInfo.name}
-                    </p>
-                    <p className="sub-sec">
-                      <span>Email</span> {element.jobSeekerInfo.email}
-                    </p>
-                    <p className="sub-sec">
-                      <span>Phone: </span> {element.jobSeekerInfo.phone}
-                    </p>
-                    <p className="sub-sec">
-                      <span>Address: </span> {element.jobSeekerInfo.address}
-                    </p>
-                    <p className="sub-sec">
-                      <span>Coverletter: </span>
-                      <textarea
-                        value={element.jobSeekerInfo.coverLetter}
-                        rows={5}
-                        disabled
-                      ></textarea>
-                    </p>
-                    <div className="btn-wrapper">
-                      <button
-                        className="outline_btn"
-                        onClick={() => handleDeleteApplication(element._id)}
-                      >
-                        Delete Application
-                      </button>
-                      <Link
-                        to={
-                          element.jobSeekerInfo &&
-                          element.jobSeekerInfo.resume.url
-                        }
-                        className="btn"
-                        target="_blank"
-                      >
-                        View Resume
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <FaBriefcase className="header-icon" />
+        <h2>My Applications</h2>
+      </div>
+
+      <div className="applications-grid">
+        {applications.map((application) => (
+          <div className="application-card" key={application._id}>
+            <div className="application-header">
+              <h3>{application.jobInfo.jobTitle}</h3>
+              <span className="company-name">{application.jobInfo.companyName}</span>
+            </div>
+
+            <div className="application-details">
+              <div className="detail-item">
+                <FaUser className="icon" />
+                <div>
+                  <label>Name</label>
+                  <span>{application.jobSeekerInfo.name}</span>
+                </div>
+              </div>
+
+              <div className="detail-item">
+                <FaEnvelope className="icon" />
+                <div>
+                  <label>Email</label>
+                  <span>{application.jobSeekerInfo.email}</span>
+                </div>
+              </div>
+
+              <div className="detail-item">
+                <FaPhone className="icon" />
+                <div>
+                  <label>Phone</label>
+                  <span>{application.jobSeekerInfo.phone}</span>
+                </div>
+              </div>
+
+              <div className="detail-item">
+                <FaMapMarkerAlt className="icon" />
+                <div>
+                  <label>Address</label>
+                  <span>{application.jobSeekerInfo.address}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="cover-letter">
+              <h4>Cover Letter</h4>
+              <p>{application.jobSeekerInfo.coverLetter}</p>
+            </div>
+
+            <div className="application-actions">
+              <Link
+                to={application.jobSeekerInfo.resume.url}
+                className="view-resume-btn"
+                target="_blank"
+              >
+                <FaFileAlt className="icon" />
+                View Resume
+              </Link>
+              <button 
+                className="delete-btn"
+                onClick={() => handleDeleteApplication(application._id)}
+              >
+                <FaTrash className="icon" />
+                Delete Application
+              </button>
             </div>
           </div>
-        </>
-      )}
-    </>
+        ))}
+      </div>
+    </div>
   );
 };
 

@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { FaLock, FaKey, FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "react-toastify";
 import {
   clearAllUpdateProfileErrors,
   updatePassword,
 } from "../store/slices/updateProfileSlice";
 import { getUser } from "../store/slices/userSlice";
-import { FaRegEyeSlash, FaEye } from "react-icons/fa";
-import {toast} from "react-toastify"
 
 const UpdatePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { loading, error, isUpdated } = useSelector(
-    (state) => state.updateProfile
-  );
-
+  const { loading, error, isUpdated } = useSelector((state) => state.updateProfile);
   const dispatch = useDispatch();
 
   const handleUpdatePassword = () => {
@@ -33,82 +31,103 @@ const UpdatePassword = () => {
     if (error) {
       toast.error(error);
       dispatch(clearAllUpdateProfileErrors());
-      if (isUpdated) {
-        toast.success("Password Updated");
-        dispatch(getUser());
-        dispatch(clearAllUpdateProfileErrors());
-      }
     }
-  }, [dispatch, loading, error, isUpdated]);
+    if (isUpdated) {
+      toast.success("Password Updated Successfully");
+      dispatch(getUser());
+      dispatch(clearAllUpdateProfileErrors());
+      // Clear form fields after successful update
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    }
+  }, [dispatch, error, isUpdated]);
 
   return (
-    <div className="account_components update_password_component">
-      <h3>Update Password</h3>
-      <div>
-        <label>Current Password</label>
-        <input
-          type={showPassword ? "text" : "password"}
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-        />
-        {showPassword ? (
-          <FaRegEyeSlash
-            className="eye_icon"
-            onClick={() => setShowPassword(!showPassword)}
-          />
-        ) : (
-          <FaEye
-            className="eye_icon"
-            onClick={() => setShowPassword(!showPassword)}
-          />
-        )}
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <FaShieldAlt className="header-icon" />
+        <h2>Update Password</h2>
       </div>
-      <div>
-        <label>New Password</label>
-        <input
-          type={showPassword ? "text" : "password"}
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
-        {showPassword ? (
-          <FaRegEyeSlash
-            className="eye_icon"
-            onClick={() => setShowPassword(!showPassword)}
-          />
-        ) : (
-          <FaEye
-            className="eye_icon"
-            onClick={() => setShowPassword(!showPassword)}
-          />
-        )}
-      </div>
-      <div>
-        <label>Confirm Password</label>
-        <input
-          type={showPassword ? "text" : "password"}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        {showPassword ? (
-          <FaRegEyeSlash
-            className="eye_icon"
-            onClick={() => setShowPassword(!showPassword)}
-          />
-        ) : (
-          <FaEye
-            className="eye_icon"
-            onClick={() => setShowPassword(!showPassword)}
-          />
-        )}
-      </div>
-      <div className="save_change_btn_wrapper">
-        <button
-          className="btn"
-          onClick={handleUpdatePassword}
-          disabled={loading}
-        >
-          Update Password
-        </button>
+
+      <div className="profile-card">
+        <div className="form-grid">
+          <div className="form-group full-width">
+            <label>
+              <FaKey className="icon" /> Current Password
+            </label>
+            <div className="password-input">
+              <input
+                type={showOldPassword ? "text" : "password"}
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                placeholder="Enter your current password"
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowOldPassword(!showOldPassword)}
+                aria-label={showOldPassword ? "Hide password" : "Show password"}
+              >
+                {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group full-width">
+            <label>
+              <FaLock className="icon" /> New Password
+            </label>
+            <div className="password-input">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter your new password"
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                aria-label={showNewPassword ? "Hide password" : "Show password"}
+              >
+                {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group full-width">
+            <label>
+              <FaLock className="icon" /> Confirm New Password
+            </label>
+            <div className="password-input">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your new password"
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button
+            className="submit-btn"
+            onClick={handleUpdatePassword}
+            disabled={loading}
+          >
+            {loading ? "Updating..." : "Update Password"}
+          </button>
+        </div>
       </div>
     </div>
   );

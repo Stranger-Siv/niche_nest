@@ -7,6 +7,7 @@ import {
   postJob,
   resetJobSlice,
 } from "../store/slices/jobSlice";
+import { FaBriefcase, FaBuilding, FaMapMarkerAlt, FaMoneyBillWave, FaTags, FaUsers, FaGlobe, FaFileAlt } from "react-icons/fa";
 import { CiCircleInfo } from "react-icons/ci";
 
 const JobPost = () => {
@@ -38,11 +39,11 @@ const JobPost = () => {
     "Network Administration",
     "UI/UX Design",
     "Game Development",
-    "IoT (Internet of Things)",
+    "IoT",
     "Big Data",
     "Machine Learning",
     "IT Project Management",
-    "IT Support and Helpdesk",
+    "IT Support",
     "Systems Administration",
     "IT Consulting",
   ];
@@ -60,30 +61,32 @@ const JobPost = () => {
     "Bhubeneshwar",
   ];
 
-  const { isAuthenticated, user } = useSelector((state) => state.user);
   const { loading, error, message } = useSelector((state) => state.jobs);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handlePostJob = (e) => {
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("jobType", jobType);
-    formData.append("location", location);
-    formData.append("companyName", companyName);
-    formData.append("introduction", introduction);
-    formData.append("responsibilities", responsibilities);
-    formData.append("qualifications", qualifications);
-    offers && formData.append("offers", offers);
-    formData.append("jobNiche", jobNiche);
-    formData.append("salary", salary);
-    hiringMultipleCandidates &&
-      formData.append("hiringMultipleCandidates", hiringMultipleCandidates);
-    personalWebsiteTitle &&
-      formData.append("personalWebsiteTitle", personalWebsiteTitle);
-    personalWebsiteUrl &&
-      formData.append("personalWebsiteUrl", personalWebsiteUrl);
+  const jobTypes = [
+    "Full-time",
+    "Part-time"
+  ];
 
-    dispatch(postJob(formData));
+  const handlePostJob = () => {
+    const jobData = {
+      title,
+      jobType,
+      location,
+      companyName,
+      introduction,
+      responsibilities,
+      qualifications,
+      offers,
+      jobNiche,
+      salary,
+      hiringMultipleCandidates,
+      personalWebsiteTitle,
+      personalWebsiteUrl,
+    };
+    dispatch(postJob(jobData));
   };
 
   useEffect(() => {
@@ -94,159 +97,204 @@ const JobPost = () => {
     if (message) {
       toast.success(message);
       dispatch(resetJobSlice());
+      navigate("/my/jobs");
     }
-  }, [dispatch, error, loading, message]);
+  }, [dispatch, error, message, navigate]);
 
   return (
-    <div className="account_components">
-      <h3>Post A Job</h3>
-      <div>
-        <label>Title</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Job Title"
-        />
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <FaBriefcase className="header-icon" />
+        <h2>Post a New Job</h2>
       </div>
-      <div>
-        <label>Job Type</label>
-        <select value={jobType} onChange={(e) => setJobType(e.target.value)}>
-          <option value="">Select Job Type</option>
-          <option value="Full-time">Full-time</option>
-          <option value="Part-time">Part-time</option>
-        </select>
-      </div>
-      <div>
-        <label>Location (City)</label>
-        <select value={location} onChange={(e) => setLocation(e.target.value)}>
-          <option value="">Select Job Type</option>
-          {cities.map((element) => {
-            return <option value={element}>{element}</option>;
-          })}
-        </select>
-      </div>
-      <div>
-        <label>Company Name</label>
-        <input
-          type="text"
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          placeholder="Company Name"
-        />
-      </div>
-      <div>
-        <label>Company/Job Introduction</label>
-        <textarea
-          value={introduction}
-          onChange={(e) => setIntroduction(e.target.value)}
-          placeholder="Company / Job Introduction"
-          rows={7}
-        />
-      </div>
-      <div>
-        <label>Responsibilities</label>
-        <textarea
-          value={responsibilities}
-          onChange={(e) => setResponsibilities(e.target.value)}
-          placeholder="Job Responsibilities"
-          rows={7}
-        />
-      </div>
-      <div>
-        <label>Qualifications</label>
-        <textarea
-          value={qualifications}
-          onChange={(e) => setQualifications(e.target.value)}
-          placeholder="Required Qualifications For Job"
-          rows={7}
-        />
-      </div>
-      <div>
-        <div className="label-infoTag-wrapper">
-          <label>What We Offer</label>
-          <span>
-            <CiCircleInfo /> Optional
-          </span>
+
+      <div className="profile-card">
+        <div className="form-grid">
+          <div className="form-group">
+            <label>
+              <FaBriefcase className="icon" /> Job Title
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter job title"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>
+              <FaBuilding className="icon" /> Company Name
+            </label>
+            <input
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Enter company name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>
+              <FaTags className="icon" /> Job Type
+            </label>
+            <select value={jobType} onChange={(e) => setJobType(e.target.value)}>
+              <option value="">Select Job Type</option>
+              {jobTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>
+              <FaMapMarkerAlt className="icon" /> Location
+            </label>
+            <select value={location} onChange={(e) => setLocation(e.target.value)}>
+              <option value="">Select Location</option>
+              {cities.map((city) => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>
+              <FaTags className="icon" /> Job Niche
+            </label>
+            <select value={jobNiche} onChange={(e) => setJobNiche(e.target.value)}>
+              <option value="">Select Job Niche</option>
+              {nichesArray.map((niche) => (
+                <option key={niche} value={niche}>{niche}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>
+              <FaMoneyBillWave className="icon" /> Salary Range
+            </label>
+            <input
+              type="text"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+              placeholder="e.g., 50000 - 80000"
+            />
+          </div>
+
+          <div className="form-group full-width">
+            <label>
+              <FaFileAlt className="icon" /> Introduction
+            </label>
+            <textarea
+              value={introduction}
+              onChange={(e) => setIntroduction(e.target.value)}
+              placeholder="Brief introduction about the job"
+              rows={4}
+            />
+          </div>
+
+          <div className="form-group full-width">
+            <label>
+              <FaFileAlt className="icon" /> Responsibilities
+            </label>
+            <textarea
+              value={responsibilities}
+              onChange={(e) => setResponsibilities(e.target.value)}
+              placeholder="Key responsibilities of the role"
+              rows={4}
+            />
+          </div>
+
+          <div className="form-group full-width">
+            <label>
+              <FaFileAlt className="icon" /> Qualifications
+            </label>
+            <textarea
+              value={qualifications}
+              onChange={(e) => setQualifications(e.target.value)}
+              placeholder="Required qualifications"
+              rows={4}
+            />
+          </div>
+
+          <div className="form-group full-width">
+            <label>
+              <FaFileAlt className="icon" /> What We Offer
+            </label>
+            <textarea
+              value={offers}
+              onChange={(e) => setOffers(e.target.value)}
+              placeholder="Benefits and perks"
+              rows={4}
+            />
+          </div>
+
+          <div className="form-group">
+            <div className="label-with-info">
+              <label>
+                <FaUsers className="icon" /> Hiring Multiple?
+              </label>
+              <span className="info-tag">
+                <CiCircleInfo /> Optional
+              </span>
+            </div>
+            <select
+              value={hiringMultipleCandidates}
+              onChange={(e) => setHiringMultipleCandidates(e.target.value)}
+            >
+              <option value="">Select Option</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <div className="label-with-info">
+              <label>
+                <FaGlobe className="icon" /> Website Name
+              </label>
+              <span className="info-tag">
+                <CiCircleInfo /> Optional
+              </span>
+            </div>
+            <input
+              type="text"
+              value={personalWebsiteTitle}
+              onChange={(e) => setPersonalWebsiteTitle(e.target.value)}
+              placeholder="Company website name"
+            />
+          </div>
+
+          <div className="form-group">
+            <div className="label-with-info">
+              <label>
+                <FaGlobe className="icon" /> Website URL
+              </label>
+              <span className="info-tag">
+                <CiCircleInfo /> Optional
+              </span>
+            </div>
+            <input
+              type="url"
+              value={personalWebsiteUrl}
+              onChange={(e) => setPersonalWebsiteUrl(e.target.value)}
+              placeholder="Company website URL"
+            />
+          </div>
         </div>
-        <textarea
-          value={offers}
-          onChange={(e) => setOffers(e.target.value)}
-          placeholder="What are we offering in return!"
-          rows={7}
-        />
-      </div>
-      <div>
-        <label>Job Niche</label>
-        <select value={jobNiche} onChange={(e) => setJobNiche(e.target.value)}>
-          <option value="">Select Job Niche</option>
-          {nichesArray.map((element) => {
-            return <option value={element}>{element}</option>;
-          })}
-        </select>
-      </div>
-      <div>
-        <label>Salary</label>
-        <input
-          type="text"
-          value={salary}
-          onChange={(e) => setSalary(e.target.value)}
-          placeholder="50000 - 800000"
-        />
-      </div>
-      <div>
-        <div className="label-infoTag-wrapper">
-          <label>Hiring Multiple Candidates?</label>
-          <span>
-            <CiCircleInfo /> Optional
-          </span>
+
+        <div className="form-actions">
+          <button
+            className="submit-btn"
+            onClick={handlePostJob}
+            disabled={loading}
+          >
+            {loading ? "Posting..." : "Post Job"}
+          </button>
         </div>
-        <select
-          value={hiringMultipleCandidates}
-          onChange={(e) => setHiringMultipleCandidates(e.target.value)}
-        >
-          <option value="">Hiring Multiple Candidates?</option>
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-        </select>
-      </div>
-      <div>
-        <div className="label-infoTag-wrapper">
-          <label>Personal Website Name</label>
-          <span>
-            <CiCircleInfo /> Optional
-          </span>
-        </div>
-        <input
-          type="text"
-          value={personalWebsiteTitle}
-          onChange={(e) => setPersonalWebsiteTitle(e.target.value)}
-          placeholder="Peronsal Website Name/Title"
-        />
-      </div>
-      <div>
-        <div className="label-infoTag-wrapper">
-          <label>Personal Website Link (URL)</label>
-          <span>
-            <CiCircleInfo /> Optional
-          </span>
-        </div>
-        <input
-          type="text"
-          value={personalWebsiteUrl}
-          onChange={(e) => setPersonalWebsiteUrl(e.target.value)}
-          placeholder="Peronsal Website Link (URL)"
-        />
-      </div>
-      <div>
-        <button
-          style={{ margin: "0 auto" }}
-          className="btn"
-          onClick={handlePostJob}
-          disabled={loading}
-        >
-          Post Job
-        </button>
       </div>
     </div>
   );

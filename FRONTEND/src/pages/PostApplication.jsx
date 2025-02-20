@@ -8,18 +8,29 @@ import {
 } from "../store/slices/applicationSlice";
 import { toast } from "react-toastify";
 import { fetchSingleJob } from "../store/slices/jobSlice";
-import { IoMdCash } from "react-icons/io";
-import { FaToolbox } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
+import { 
+  FaUser, 
+  FaEnvelope, 
+  FaPhone, 
+  FaMapMarkerAlt, 
+  FaFileAlt, 
+  FaMoneyBillWave, 
+  FaBriefcase, 
+  FaBuilding,
+  FaUpload,
+  FaCheckCircle,
+  FaListUl,
+  FaGift
+} from "react-icons/fa";
 
 const PostApplication = () => {
   const { singleJob } = useSelector((state) => state.jobs);
   const { isAuthenticated, user } = useSelector((state) => state.user);
-  const { loading, error, message } = useSelector(
-    (state) => state.applications
-  );
+  const { loading, error, message } = useSelector((state) => state.applications);
 
   const { jobId } = useParams();
+  const navigateTo = useNavigate();
+  const dispatch = useDispatch();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -27,9 +38,6 @@ const PostApplication = () => {
   const [address, setAddress] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
   const [resume, setResume] = useState("");
-
-  const navigateTo = useNavigate();
-  const dispatch = useDispatch();
 
   const handlePostApplication = (e) => {
     e.preventDefault();
@@ -65,189 +73,193 @@ const PostApplication = () => {
     dispatch(fetchSingleJob(jobId));
   }, [dispatch, error, message, jobId, user]);
 
-  let qualifications = [];
-  let responsibilities = [];
-  let offering = [];
-  if (singleJob.qualifications) {
-    qualifications = singleJob.qualifications.split(". ");
-  }
-  if (singleJob.responsibilities) {
-    responsibilities = singleJob.responsibilities.split(". ");
-  }
-  if (singleJob.offers) {
-    offering = singleJob.offers.split(". ");
-  }
-
-  const resumeHandler = (e) => {
-    const file = e.target.files[0];
-    setResume(file);
-  };
-
   return (
-    <>
-      <article className="application_page">
-        <form>
-          <h3>Application Form</h3>
-          <div>
-            <label>Job Title</label>
-            <input type="text" placeholder={singleJob.title} disabled />
-          </div>
-          <div>
-            <label>Your Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Your Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Phone Number</label>
-            <input
-              type="number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Address</label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-          </div>
-          {user && user.role === "Job Seeker" && (
-            <>
-              <div>
-                <label>Coverletter</label>
-                <textarea
-                  value={coverLetter}
-                  onChange={(e) => setCoverLetter(e.target.value)}
-                  rows={10}
-                />
-              </div>
-              <div>
-                <label>Resume</label>
-                <input type="file" onChange={resumeHandler} />
-              </div>
-            </>
-          )}
-
-          {isAuthenticated && user.role === "Job Seeker" && (
-            <div style={{ alignItems: "flex-end" }}>
-              <button
-                className="btn"
-                onClick={handlePostApplication}
-                disabled={loading}
-              >
-                Apply
-              </button>
-            </div>
-          )}
-        </form>
-
-        <div className="job-details">
-          <header>
+    <div className="dashboard-container">
+      <div className="application-layout">
+        {/* Job Details Card */}
+        <div className="profile-card job-details">
+          <div className="job-header">
             <h3>{singleJob.title}</h3>
-            {singleJob.personalWebsite && (
-              <Link target="_blank" to={singleJob.personalWebsite.url}>
-                {singleJob.personalWebsite.title}
-              </Link>
-            )}
-            <p>{singleJob.location}</p>
-            <p>Rs. {singleJob.salary} a month</p>
-          </header>
-          <hr />
-          <section>
-            <div className="wrapper">
-              <h3>Job details</h3>
-              <div>
-                <IoMdCash />
-                <div>
-                  <span>Pay</span>
-                  <span>{singleJob.salary} a month</span>
-                </div>
-              </div>
-              <div>
-                <FaToolbox />
-                <div>
-                  <span>Job type</span>
-                  <span>{singleJob.jobType}</span>
-                </div>
-              </div>
+            <div className="company-info">
+              <FaBuilding className="icon" />
+              <span>{singleJob.companyName}</span>
             </div>
-            <hr />
-            <div className="wrapper">
-              <h3>Location</h3>
-              <div className="location-wrapper">
-                <FaLocationDot />
+            <div className="job-meta">
+              <div className="meta-item">
+                <FaMapMarkerAlt className="icon" />
                 <span>{singleJob.location}</span>
               </div>
+              <div className="meta-separator"></div>
+              <div className="meta-item">
+                <FaMoneyBillWave className="icon" />
+                <span>₹{singleJob.salary} a month</span>
+              </div>
+              <div className="meta-separator"></div>
+              <div className="meta-item">
+                <FaBriefcase className="icon" />
+                <span>{singleJob.jobType}</span>
+              </div>
             </div>
-            <hr />
-            <div className="wrapper">
-              <h3>Full Job Description</h3>
+          </div>
+
+          <div className="job-content">
+            <div className="job-section">
+              <h4>
+                <FaFileAlt className="section-icon" />
+                Job Description
+              </h4>
               <p>{singleJob.introduction}</p>
-              {singleJob.qualifications && (
-                <div>
-                  <h4>Qualifications</h4>
-                  <ul>
-                    {qualifications.map((element) => {
-                      return (
-                        <li key={element} style={{ listStyle: "inside" }}>
-                          {element}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
-              {singleJob.responsibilities && (
-                <div>
-                  <h4>Responsibilities</h4>
-                  <ul>
-                    {responsibilities.map((element) => {
-                      return (
-                        <li key={element} style={{ listStyle: "inside" }}>
-                          {element}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
-              {singleJob.offers && (
-                <div>
-                  <h4>Offering</h4>
-                  <ul>
-                    {offering.map((element) => {
-                      return (
-                        <li key={element} style={{ listStyle: "inside" }}>
-                          {element}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
             </div>
-          </section>
-          <hr />
-          <footer>
-            <h3>Job Niche</h3>
-            <p>{singleJob.jobNiche}</p>
-          </footer>
+
+            {singleJob.qualifications && (
+              <div className="job-section">
+                <h4>
+                  <FaCheckCircle className="section-icon" />
+                  Qualifications
+                </h4>
+                <ul className="job-list">
+                  {singleJob.qualifications.split(". ").filter(Boolean).map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {singleJob.responsibilities && (
+              <div className="job-section">
+                <h4>
+                  <FaListUl className="section-icon" />
+                  Responsibilities
+                </h4>
+                <ul className="job-list">
+                  {singleJob.responsibilities.split(". ").filter(Boolean).map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {singleJob.offers && (
+              <div className="job-section">
+                <h4>
+                  <FaGift className="section-icon" />
+                  What We Offer
+                </h4>
+                <ul className="job-list">
+                  {singleJob.offers.split(". ").filter(Boolean).map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
-      </article>
-    </>
+
+        {/* Application Form */}
+        <div className="profile-card application-form">
+          <div className="form-header">
+            <FaBriefcase className="header-icon" />
+            <h2>Apply for this position</h2>
+          </div>
+
+          <div className="form-content">
+            <div className="form-section">
+              <div className="form-group">
+                <label>
+                  <FaUser className="icon" /> Full Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <FaEnvelope className="icon" /> Email Address
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <FaPhone className="icon" /> Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter your phone number"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <FaMapMarkerAlt className="icon" /> Address
+                </label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter your address"
+                />
+              </div>
+            </div>
+
+            {user && user.role === "Job Seeker" && (
+              <div className="form-section">
+                <div className="form-group">
+                  <label>
+                    <FaFileAlt className="icon" /> Cover Letter
+                  </label>
+                  <textarea
+                    value={coverLetter}
+                    onChange={(e) => setCoverLetter(e.target.value)}
+                    placeholder="Write your cover letter"
+                    rows={6}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>
+                    <FaUpload className="icon" /> Resume
+                  </label>
+                  <div className="file-upload">
+                    <input
+                      type="file"
+                      onChange={(e) => setResume(e.target.files[0])}
+                      accept=".pdf,.doc,.docx"
+                      id="resume-upload"
+                    />
+                    <label htmlFor="resume-upload" className="upload-label">
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isAuthenticated && user.role === "Job Seeker" && (
+              <div className="form-actions">
+                <button
+                  className="submit-btn"
+                  onClick={handlePostApplication}
+                  disabled={loading}
+                >
+                  {loading ? "Submitting..." : "Submit Application"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

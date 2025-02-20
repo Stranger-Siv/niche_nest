@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { FaMapMarkerAlt, FaBriefcase, FaBuilding, FaDollarSign, FaTrash } from "react-icons/fa";
 import {
   clearAllJobErrors,
   deleteJob,
@@ -10,10 +11,9 @@ import {
 import Spinner from "../components/Spinner";
 
 const MyJobs = () => {
-  const { loading, error, myJobs, message } = useSelector(
-    (state) => state.jobs
-  );
+  const { loading, error, myJobs, message } = useSelector((state) => state.jobs);
   const dispatch = useDispatch();
+
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -27,70 +27,84 @@ const MyJobs = () => {
   }, [dispatch, error, message]);
 
   const handleDeleteJob = (id) => {
-    dispatch(deleteJob(id));
+    if (window.confirm("Are you sure you want to delete this job?")) {
+      dispatch(deleteJob(id));
+    }
   };
 
+  if (loading) return <Spinner />;
+  
+  if (myJobs && myJobs.length <= 0) {
+    return (
+      <div className="empty-state">
+        <h2>No Jobs Posted</h2>
+        <p>You haven't posted any jobs yet.</p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {loading ? (
-        <Spinner />
-      ) : myJobs && myJobs.length <= 0 ? (
-        <h1 style={{ fontSize: "1.4rem", fontWeight: "600" }}>
-          You have not posted any job!
-        </h1>
-      ) : (
-        <>
-          <div className="account_components">
-            <h3>My Jobs</h3>
-            <div className="applications_container">
-              {myJobs.map((element) => (
-                <div className="card" key={element._id}>
-                  <p className="sub-sec">
-                    <span>Job Title: </span>
-                    {element.title}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Job Niche:</span> {element.jobNiche}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Salary: </span> {element.salary}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Location:</span> {element.location}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Job Type:</span> {element.jobType}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Company Name:</span> {element.companyName}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Introduction:</span> {element.introduction}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Qualifications:</span> {element.qualifications}
-                  </p>
-                  <p className="sub-sec">
-                    <span>Responsibilities:</span> {element.responsibilities}
-                  </p>
-                  {element.offers && (
-                    <p className="sub-sec">
-                      <span>What Are We Offering:</span> {element.offers}
-                    </p>
-                  )}
-                  <button
-                    className="btn"
-                    onClick={() => handleDeleteJob(element._id)}
-                  >
-                    Delete Job
-                  </button>
-                </div>
-              ))}
+    <div className="my-jobs-container">
+      <h2 className="page-title">My Posted Jobs</h2>
+      <div className="jobs-grid">
+        {myJobs.map((job) => (
+          <div className="job-card" key={job._id}>
+            <div className="job-card-header">
+              <h3>{job.title}</h3>
+              <span className="job-niche">{job.jobNiche}</span>
             </div>
+
+            <div className="job-card-details">
+              <div className="detail-item">
+                <FaBuilding className="icon" />
+                <span>{job.companyName}</span>
+              </div>
+              <div className="detail-item">
+                <FaMapMarkerAlt className="icon" />
+                <span>{job.location}</span>
+              </div>
+              <div className="detail-item">
+                <FaBriefcase className="icon" />
+                <span>{job.jobType}</span>
+              </div>
+              <div className="detail-item">
+                <FaDollarSign className="icon" />
+                <span>{job.salary}</span>
+              </div>
+            </div>
+
+            <div className="job-card-content">
+              <div className="content-section">
+                <h4>Introduction</h4>
+                <p>{job.introduction}</p>
+              </div>
+              <div className="content-section">
+                <h4>Qualifications</h4>
+                <p>{job.qualifications}</p>
+              </div>
+              <div className="content-section">
+                <h4>Responsibilities</h4>
+                <p>{job.responsibilities}</p>
+              </div>
+              {job.offers && (
+                <div className="content-section">
+                  <h4>What We Offer</h4>
+                  <p>{job.offers}</p>
+                </div>
+              )}
+            </div>
+
+            <button 
+              className="delete-btn"
+              onClick={() => handleDeleteJob(job._id)}
+            >
+              <FaTrash className="icon" />
+              Delete Job
+            </button>
           </div>
-        </>
-      )}
-    </>
+        ))}
+      </div>
+    </div>
   );
 };
 
